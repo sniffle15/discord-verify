@@ -1,0 +1,141 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum MemberStatus {
+  ACTIVE
+  REVOKED
+}
+
+enum ActorType {
+  SYSTEM
+  ADMIN
+  USER
+}
+
+enum AuditEventType {
+  MEMBER_VERIFIED
+  MEMBER_DEAUTHORIZED
+  MEMBER_CHECKED
+  MEMBER_DATA_DELETED
+  ROLE_ASSIGNED
+  ROLE_ASSIGN_FAILED
+  ROLE_REVOKED
+  ROLE_REVOKE_FAILED
+  VERIFICATION_BLOCKED
+  VERIFICATION_FAILED
+  SUSPICIOUS_ACTIVITY
+  RESTORE_STARTED
+  RESTORE_COMPLETED
+  RESTORE_CANCELLED
+  RESTORE_FAILED
+  SETTINGS_UPDATED
+  ADMIN_LOGIN
+  ADMIN_LOGIN_DENIED
+  ADMIN_LOGOUT
+  SYSTEM_ALERT
+}
+
+enum RestoreStatus {
+  PENDING
+  RUNNING
+  COMPLETED
+  CANCELLED
+  FAILED
+}
+
+model Member {
+  id                String       @id @default(cuid())
+  discordId         String       @unique @map("discord_id")
+  username          String
+  globalName        String?      @map("global_name")
+  avatar            String?
+  status            MemberStatus @default(ACTIVE)
+  /// AES-256-GCM ciphertext bound to "member:<discordId>:access". Must never leave the backend.
+  accessTokenEnc    String?      @map("access_token_enc")
+  /// AES-256-GCM ciphertext bound to "member:<discordId>:refresh". Must never leave the backend.
+  refreshTokenEnc   String?      @map("refresh_token_enc")
+  tokenExpiresAt    DateTime?    @map("token_expires_at")
+  scopes            String[]     @default([])
+  inTargetGuild     Boolean      @default(false) @map("in_target_guild")
+  roleAssigned      Boolean      @default(false) @map("role_assigned")
+  lastJoinedGuildId String?      @map("last_joined_guild_id")
+  lastJoinedAt      DateTime?    @map("last_joined_at")
+  /// Keyed HMAC, never the raw IP.
+  ipHash            String?      @map("ip_hash")
+  fingerprintHash   String?      @map("fingerprint_hash")
+  verifiedAt        DateTime     @default(now()) @map("verified_at")
+  lastVerifiedAt    DateTime     @default(now()) @map("last_verified_at")
+  lastCheckedAt     DateTime?    @map("last_checked_at")
+  checkFailures     Int          @default(0) @map("check_failures")
+  revokedAt         DateTime?    @map("revoked_at")
+  revokeReason      String?      @map("revoke_reason")
+  createdAt         DateTime     @default(now()) @map("created_at")
+  updatedAt         DateTime     @updatedAt @map("updated_at")
+
+  auditLogs AuditLog[]
+
+  @@index([status, lastCheckedAt])
+  @@index([verifiedAt])
+  @@index([fingerprintHash])
+  @@index([ipHash])
+  @@map("members")
+}
+
+model AuditLog {
+  id              String         @id @default(cuid())
+  type            AuditEventType
+  actorType       ActorType      @default(SYSTEM) @map("actor_type")
+  actorId         String?        @map("actor_id")
+  memberId        String?        @map("member_id")
+  member          Member?        @relation(fields: [memberId], references: [id], onDelete: SetNull)
+  targetDiscordId String?        @map("target_discord_id")
+  guildId         String?        @map("guild_id")
+  message         String
+  metadata        Json?
+  createdAt       DateTime       @default(now()) @map("created_at")
+
+  @@index([createdAt(sort: Desc), id])
+  @@index([type, createdAt(sort: Desc)])
+  @@index([memberId])
+  @@map("audit_logs")
+}
+
+model RestoreJob {
+  id            String        @id @default(cuid())
+  guildId       String        @map("guild_id")
+  roleIds       String[]      @default([]) @map("role_ids")
+  status        RestoreStatus @default(PENDING)
+  total         Int           @default(0)
+  added         Int           @default(0)
+  alreadyMember Int           @default(0) @map("already_member")
+  skipped       Int           @default(0)
+  failed        Int           @default(0)
+  error         String?
+  createdBy     String        @map("created_by")
+  startedAt     DateTime?     @map("started_at")
+  finishedAt    DateTime?     @map("finished_at")
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+
+  @@index([status])
+  @@index([createdAt(sort: Desc)])
+  @@map("restore_jobs")
+}
+
+model Setting {
+  key       String   @id
+  /// Plaintext for non-secret keys, AES-256-GCM ciphertext bound to "setting:<key>" when encrypted.
+  value     String
+  encrypted Boolean  @default(false)
+  updatedBy String?  @map("updated_by")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("settings")
+}

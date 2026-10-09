@@ -1,0 +1,36 @@
+{
+  "name": "discord-verify",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Self-hosted Discord verification, deauthorization detection and member restore system",
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev:api": "npm run dev -w @dv/api",
+    "dev:worker": "npm run dev:worker -w @dv/api",
+    "dev:bot": "npm run dev:bot -w @dv/api",
+    "dev:web": "npm run dev -w @dv/web",
+    "build": "npm run build -w @dv/api && npm run build -w @dv/web",
+    "typecheck": "npm run typecheck -w @dv/api && npm run typecheck -w @dv/web",
+    "test": "npm run test -w @dv/api",
+    "db:migrate": "npm run db:migrate -w @dv/api",
+    "db:deploy": "npm run db:deploy -w @dv/api",
+    "gen:key": "node -e \"console.log(require('node:crypto').randomBytes(32).toString('base64'))\""
+  },
+  "overrides": {
+    "next": {
+      "postcss": "^8.5.23"
+    }
+  },
+  "engines": {
+    "node": ">=20.11"
+  },
+  "allowScripts": {
+    "@prisma/client@6.19.3": true,
+    "prisma@6.19.3": true,
+    "@prisma/engines@6.19.3": true,
+    "esbuild@0.28.2": true,
+    "msgpackr-extract@3.0.4": true
+  }
+}
