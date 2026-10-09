@@ -21,7 +21,7 @@ export default async function AdminLoginPage({ searchParams }: { searchParams: P
     <VerifyShell>
       <Card>
         <CardHeader className="items-center text-center">
-          <Lock className="mb-2 size-10 text-primary" />
+          <Lock className="mb-2 size-8 text-primary" />
           <CardTitle className="text-2xl">Admin dashboard</CardTitle>
           <CardDescription>Access is restricted to configured administrator accounts.</CardDescription>
         </CardHeader>
@@ -32,7 +32,7 @@ export default async function AdminLoginPage({ searchParams }: { searchParams: P
               {ERRORS[error] ?? 'Login failed.'}
             </div>
           )}
-          <Button asChild size="lg" className="w-full bg-[#5865F2] text-white hover:bg-[#4752C4]">
+          <Button asChild size="lg" className="w-full">
             <a href="/api/auth/login">Sign in with Discord</a>
           </Button>
         </CardContent>

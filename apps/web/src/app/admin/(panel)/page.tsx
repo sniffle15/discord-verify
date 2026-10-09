@@ -34,8 +34,8 @@ function DailyChart({ daily }: { daily: Stats['daily'] }) {
     <div className="flex h-40 items-end gap-1.5">
       {daily.map((d) => (
         <div key={d.day} className="group relative flex h-full flex-1 items-end gap-0.5">
-          <div className="flex-1 rounded-t bg-primary/80" style={{ height: `${(d.verified / max) * 100}%` }} />
-          <div className="flex-1 rounded-t bg-destructive/70" style={{ height: `${(d.revoked / max) * 100}%` }} />
+          <div className="flex-1 rounded-t bg-success/80" style={{ height: `${(d.verified / max) * 100}%` }} />
+          <div className="flex-1 rounded-t bg-primary/80" style={{ height: `${(d.revoked / max) * 100}%` }} />
           <div className="pointer-events-none absolute -top-9 left-1/2 hidden -translate-x-1/2 rounded bg-popover px-2 py-1 text-xs whitespace-nowrap shadow group-hover:block">
             {new Date(d.day).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}: +{d.verified} / −{d.revoked}
           </div>
@@ -97,7 +97,7 @@ export default function OverviewPage() {
           <CardHeader>
             <CardTitle>Last 14 days</CardTitle>
             <CardDescription>
-              <span className="text-primary">■</span> verified &nbsp; <span className="text-destructive">■</span> revoked
+              <span className="text-success">■</span> verified &nbsp; <span className="text-primary">■</span> revoked
             </CardDescription>
           </CardHeader>
           <CardContent>

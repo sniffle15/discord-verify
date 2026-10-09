@@ -17,7 +17,7 @@ export function VerifyButton() {
   }
 
   return (
-    <Button asChild size="lg" className="w-full bg-[#5865F2] text-white hover:bg-[#4752C4]">
+    <Button asChild size="lg" className="w-full shadow-[0_0_24px_-6px_var(--color-primary)]">
       <a href="/api/verify/start" onClick={start} aria-disabled={pending}>
         {pending ? <Loader2 className="animate-spin" /> : <LogIn />}
         {pending ? 'Redirecting to Discord…' : 'Verify with Discord'}

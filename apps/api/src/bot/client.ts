@@ -18,6 +18,7 @@ import { logger } from '../lib/logger.js';
 import { prisma } from '../lib/prisma.js';
 import { getSettings } from '../lib/settings.js';
 import { audit } from '../services/audit.js';
+import { BRAND_COLOR } from '../lib/brand.js';
 
 const verifyPanelCommand = new SlashCommandBuilder()
   .setName('verify-panel')
@@ -94,7 +95,8 @@ export async function startBot(token: string): Promise<() => Promise<void>> {
           'Click the button below and sign in with Discord to get access to this server.\n\n' +
             'Only your public profile is read. You can revoke access at any time under **Settings > Authorized Apps**.',
         )
-        .setColor(0x5865f2);
+        .setColor(BRAND_COLOR)
+        .setFooter({ text: 'Elysian Verification' });
       const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
         new ButtonBuilder().setStyle(ButtonStyle.Link).setLabel('Verify').setURL(`${env.PUBLIC_URL}/verify`),
       );

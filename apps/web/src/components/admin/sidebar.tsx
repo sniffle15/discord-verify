@@ -1,8 +1,9 @@
 'use client';
 
-import { DatabaseBackup, LayoutDashboard, LogOut, ScrollText, Settings, ShieldCheck, Users } from 'lucide-react';
+import { DatabaseBackup, LayoutDashboard, LogOut, ScrollText, Settings, Users } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { BrandMark } from '@/components/brand';
 import { Button } from '@/components/ui/button';
 import { apiFetch } from '@/lib/api';
 import { avatarUrl, cn } from '@/lib/utils';
@@ -27,10 +28,7 @@ export function Sidebar() {
 
   return (
     <aside className="flex w-full flex-col border-b bg-card/50 md:sticky md:top-0 md:h-screen md:w-60 md:border-r md:border-b-0">
-      <div className="flex items-center gap-2 px-5 py-5">
-        <ShieldCheck className="size-5 text-primary" />
-        <span className="font-semibold">Verify Admin</span>
-      </div>
+      <BrandMark className="px-5 py-5" />
       <nav className="flex gap-1 overflow-x-auto px-3 md:flex-1 md:flex-col">
         {NAV.map(({ href, label, icon: Icon }) => {
           const active = href === '/admin' ? pathname === href : pathname.startsWith(href);

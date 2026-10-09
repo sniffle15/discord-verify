@@ -2,6 +2,7 @@ import type { Member } from '@prisma/client';
 import { sendChannelMessage, sendDirectMessage, type GuildActionResult } from '../discord/guild.js';
 import { exchangeCode, getCurrentUser, VERIFY_SCOPES } from '../discord/oauth.js';
 import { env } from '../config/env.js';
+import { BRAND_COLOR, BRAND_NAME } from '../lib/brand.js';
 import { logger } from '../lib/logger.js';
 import { prisma } from '../lib/prisma.js';
 import { getSettings, requireOAuthCredentials } from '../lib/settings.js';
@@ -111,9 +112,11 @@ async function sendConfirmations(member: Member): Promise<void> {
     const dm = await sendDirectMessage(settings.botToken, member.discordId, {
       embeds: [
         {
+          author: { name: BRAND_NAME, icon_url: `${env.PUBLIC_URL}/logo.webp` },
           title: 'Verification complete',
-          description: 'You are now verified and have been given access to the server.',
-          color: 0x22c55e,
+          description: 'You are now verified and have been given access to Elysian Menu.',
+          color: BRAND_COLOR,
+          thumbnail: { url: `${env.PUBLIC_URL}/logo.webp` },
           footer: { text: 'You can revoke access at any time in Discord > Settings > Authorized Apps.' },
           timestamp,
         },
@@ -128,7 +131,8 @@ async function sendConfirmations(member: Member): Promise<void> {
         {
           title: 'Member verified',
           description: `<@${member.discordId}> (${member.username}) completed verification.`,
-          color: 0x5865f2,
+          color: BRAND_COLOR,
+          footer: { text: BRAND_NAME },
           timestamp,
         },
       ],
